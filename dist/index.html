@@ -72,7 +72,6 @@
     <main>
       <header class="toolbar">
         <div class="status"><span class="dot"></span><span id="saveState">已保存到本地</span></div>
-        <div class="actions"><button class="icon-button" id="deleteNote" title="删除当前笔记" aria-label="删除当前笔记">⌫</button></div>
       </header>
       <section class="editor">
         <input id="title" maxlength="80" placeholder="无标题笔记" aria-label="笔记标题" />
@@ -118,7 +117,6 @@
       list.onclick=e=>{const button=e.target.closest('[data-id]'); if(button){ selected=button.dataset.id; render(); }};
       folderList.onclick=e=>{const button=e.target.closest('[data-folder]'); if(button){ activeFolder=button.dataset.folder; render(); }};
       $('addFolder').onclick=()=>{ const name=prompt('请输入文件夹名称'); const clean=name?.trim(); if(!clean) return; if(allFolders().includes(clean)){ alert('该文件夹已存在。'); return; } folders.push(clean); activeFolder=clean; save(); render(); };
-      $('deleteNote').onclick=()=>{ if(notes.length===1){ alert('请至少保留一篇笔记。'); return; } if(confirm('确定删除这篇笔记吗？')){ notes=notes.filter(n=>n.id!==selected); selected=notes[0].id; save(); render(); }};
       title.oninput=content.oninput=update;
       folderSelect.onchange=()=>{ const n=current(); if(!n)return; n.folder=folderSelect.value; activeFolder=n.folder; save(); render(); };
       search.oninput=render;
