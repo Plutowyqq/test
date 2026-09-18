@@ -7,52 +7,52 @@
   <title>墨笺 · 笔记</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23162945'/%3E%3Cpath d='M18 14h22l8 8v28H18z' fill='%23f5b942'/%3E%3Cpath d='M40 14v9h9M25 32h16M25 40h16' stroke='%23162945' stroke-width='4' fill='none'/%3E%3C/svg%3E" />
   <style>
-    :root { --ink:#162945; --muted:#738092; --paper:#fffdf8; --canvas:#edf1f5; --line:#dfe5eb; --gold:#f5b942; --blue:#3978ea; --red:#d8515b; }
+    :root { --ink:#29464a; --muted:#71898a; --paper:#ffffff; --canvas:#eff9f6; --line:#d9eee8; --gold:#72c9b5; --blue:#4d9ed8; --red:#d76570; --sidebar:#e2f5ef; --sidebar-strong:#c9ebe0; --sidebar-text:#3f6665; }
     * { box-sizing:border-box; }
     body { margin:0; min-height:100vh; font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif; background:var(--canvas); color:var(--ink); }
     button, input, textarea { font:inherit; }
-    .app { display:grid; grid-template-columns:330px minmax(0,1fr); min-height:100vh; max-width:1560px; margin:auto; background:var(--paper); box-shadow:0 0 50px rgba(22,41,69,.08); }
-    .sidebar { display:flex; flex-direction:column; min-height:100vh; background:var(--ink); color:white; padding:28px 18px 18px; }
+    .app { display:grid; grid-template-columns:330px minmax(0,1fr); min-height:100vh; max-width:1560px; margin:auto; background:var(--paper); box-shadow:0 0 50px rgba(52,123,109,.09); }
+    .sidebar { display:flex; flex-direction:column; min-height:100vh; background:var(--sidebar); color:var(--sidebar-text); padding:28px 18px 18px; }
     .brand { display:flex; gap:11px; align-items:center; padding:0 10px 27px; font-size:1.2rem; font-weight:800; letter-spacing:.08em; }
-    .brand-mark { display:grid; place-items:center; width:32px; height:32px; border-radius:9px; background:var(--gold); color:var(--ink); font-size:1rem; }
-    .new-note { border:0; border-radius:12px; padding:13px 15px; background:var(--gold); color:var(--ink); text-align:left; font-weight:800; cursor:pointer; transition:.2s; }
-    .new-note:hover { transform:translateY(-1px); filter:brightness(1.05); }
+    .brand-mark { display:grid; place-items:center; width:32px; height:32px; border-radius:9px; background:#76cbb7; color:white; font-size:1rem; }
+    .new-note { border:0; border-radius:12px; padding:13px 15px; background:#78cdb9; color:white; text-align:left; font-weight:800; cursor:pointer; transition:.2s; box-shadow:0 5px 12px rgba(69,162,140,.18); }
+    .new-note:hover { transform:translateY(-1px); background:#65bda8; }
     .search-wrap { position:relative; margin:20px 0 11px; }
     .search-wrap span { position:absolute; left:13px; top:10px; opacity:.55; }
-    #search { width:100%; padding:10px 12px 10px 35px; color:white; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.08); border-radius:9px; outline:none; }
-    #search::placeholder { color:#aeb8c6; }
-    #search:focus { border-color:var(--gold); }
-    .folder-head { display:flex; justify-content:space-between; align-items:center; margin-top:5px; padding:8px 10px 4px; color:#aeb8c6; font-size:.78rem; }
-    .add-folder { width:23px; height:23px; border:0; border-radius:6px; background:rgba(255,255,255,.1); color:white; cursor:pointer; font-size:1.05rem; line-height:1; }
-    .add-folder:hover { background:rgba(255,255,255,.2); color:var(--gold); }
+    #search { width:100%; padding:10px 12px 10px 35px; color:var(--ink); border:1px solid #c8e5dd; background:rgba(255,255,255,.72); border-radius:9px; outline:none; }
+    #search::placeholder { color:#8aa4a4; }
+    #search:focus { border-color:#70c9b4; box-shadow:0 0 0 3px rgba(112,201,180,.15); }
+    .folder-head { display:flex; justify-content:space-between; align-items:center; margin-top:5px; padding:8px 10px 4px; color:#6e9290; font-size:.78rem; }
+    .add-folder { width:23px; height:23px; border:0; border-radius:6px; background:#c9e9df; color:#3d7169; cursor:pointer; font-size:1.05rem; line-height:1; }
+    .add-folder:hover { background:#b7dfd3; color:#286057; }
     .folder-list { display:grid; gap:2px; padding:2px 0 10px; }
-    .folder-item { display:flex; align-items:center; gap:8px; width:100%; border:0; border-radius:7px; padding:7px 10px; background:transparent; color:#c8d1dc; text-align:left; cursor:pointer; font-size:.83rem; }
-    .folder-item:hover, .folder-item.active { background:rgba(255,255,255,.08); color:white; }
-    .folder-item.active { color:var(--gold); }
-    .folder-item em { margin-left:auto; color:#92a0b2; font-style:normal; font-size:.72rem; }
-    .count { color:#aeb8c6; font-size:.78rem; padding:5px 10px 8px; }
+    .folder-item { display:flex; align-items:center; gap:8px; width:100%; border:0; border-radius:7px; padding:7px 10px; background:transparent; color:#57807d; text-align:left; cursor:pointer; font-size:.83rem; }
+    .folder-item:hover, .folder-item.active { background:rgba(255,255,255,.7); color:#34796d; }
+    .folder-item.active { color:#267568; font-weight:700; }
+    .folder-item em { margin-left:auto; color:#82a5a0; font-style:normal; font-size:.72rem; }
+    .count { color:#6d9691; font-size:.78rem; padding:5px 10px 8px; }
     .note-list { overflow:auto; flex:1; }
     .note-card { width:100%; border:0; border-left:3px solid transparent; border-radius:8px; padding:13px 12px; background:transparent; color:inherit; text-align:left; cursor:pointer; transition:.18s; }
-    .note-card:hover { background:rgba(255,255,255,.07); }
-    .note-card.active { background:rgba(255,255,255,.12); border-left-color:var(--gold); }
+    .note-card:hover { background:rgba(255,255,255,.55); }
+    .note-card.active { background:rgba(255,255,255,.88); border-left-color:#70c9b4; box-shadow:0 2px 7px rgba(51,120,104,.06); }
     .note-card strong, .note-card small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .note-card strong { font-size:.95rem; margin-bottom:6px; }
-    .note-card small { color:#b9c3d1; font-size:.76rem; }
-    .sidebar-footer { border-top:1px solid rgba(255,255,255,.12); padding:18px 10px 0; color:#aeb8c6; font-size:.78rem; }
+    .note-card small { color:#81a09e; font-size:.76rem; }
+    .sidebar-footer { border-top:1px solid #c9e8df; padding:18px 10px 0; color:#729793; font-size:.78rem; }
     main { min-width:0; display:flex; flex-direction:column; padding:0 6.5vw; }
     .toolbar { min-height:88px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); }
     .status { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:.84rem; }
-    .dot { width:8px; height:8px; border-radius:50%; background:#57ba8b; }
+    .dot { width:8px; height:8px; border-radius:50%; background:#69c9a8; }
     .actions { display:flex; gap:8px; }
     .icon-button { border:1px solid var(--line); width:38px; height:38px; border-radius:9px; background:white; color:var(--ink); font-size:1.1rem; cursor:pointer; }
-    .icon-button:hover { border-color:var(--blue); color:var(--blue); }
+    .icon-button:hover { border-color:#76cbb7; color:#459d8c; background:#f2fbf8; }
     .editor { width:min(760px,100%); margin:clamp(35px,7vh,82px) auto; flex:1; }
     #title { width:100%; border:0; outline:0; color:var(--ink); background:transparent; font-size:clamp(2rem,4vw,3.35rem); font-weight:800; letter-spacing:-.045em; padding:0; }
     #title::placeholder, #content::placeholder { color:#aeb6c3; }
     .meta { display:flex; gap:10px; align-items:center; padding:17px 0 25px; color:var(--muted); font-size:.83rem; border-bottom:1px solid var(--line); }
-    .tag { border-radius:99px; padding:4px 9px; color:#2e66c8; background:#eaf1ff; font-size:.75rem; font-weight:700; }
-    #folderSelect { margin-left:auto; border:0; border-radius:7px; padding:5px 8px; color:#506176; background:#f1f4f7; font-size:.78rem; outline:0; cursor:pointer; }
-    #content { width:100%; min-height:48vh; margin-top:27px; border:0; outline:0; resize:none; background:transparent; color:#334155; font-size:1.06rem; line-height:1.9; }
+    .tag { border-radius:99px; padding:4px 9px; color:#348d7b; background:#e6f7f1; font-size:.75rem; font-weight:700; }
+    #folderSelect { margin-left:auto; border:0; border-radius:7px; padding:5px 8px; color:#4d7775; background:#eff9f6; font-size:.78rem; outline:0; cursor:pointer; }
+    #content { width:100%; min-height:48vh; margin-top:27px; border:0; outline:0; resize:none; background:transparent; color:#3b5558; font-size:1.06rem; line-height:1.9; }
     .empty { padding:45px 18px; text-align:center; color:#aeb8c6; }
     @media (max-width:720px) { .app { grid-template-columns:1fr; } .sidebar { min-height:auto; padding:18px 14px 10px; } .brand { padding-bottom:16px; } .folder-head,.folder-list { display:none; } .note-list { display:flex; gap:8px; overflow:auto; max-height:112px; } .note-card { min-width:185px; padding:10px; } .sidebar-footer,.count { display:none; } main { padding:0 6vw; min-height:65vh; } .toolbar { min-height:65px; } .editor { margin:34px auto; } }
   </style>
