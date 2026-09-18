@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="一个简洁、专注的本地笔记应用" />
+  <title>墨笺 · 笔记</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23162945'/%3E%3Cpath d='M18 14h22l8 8v28H18z' fill='%23f5b942'/%3E%3Cpath d='M40 14v9h9M25 32h16M25 40h16' stroke='%23162945' stroke-width='4' fill='none'/%3E%3C/svg%3E" />
+  <style>
+    :root { --ink:#162945; --muted:#738092; --paper:#fffdf8; --canvas:#edf1f5; --line:#dfe5eb; --gold:#f5b942; --blue:#3978ea; --red:#d8515b; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif; background:var(--canvas); color:var(--ink); }
+    button, input, textarea { font:inherit; }
+    .app { display:grid; grid-template-columns:330px minmax(0,1fr); min-height:100vh; max-width:1560px; margin:auto; background:var(--paper); box-shadow:0 0 50px rgba(22,41,69,.08); }
+    .sidebar { display:flex; flex-direction:column; min-height:100vh; background:var(--ink); color:white; padding:28px 18px 18px; }
+    .brand { display:flex; gap:11px; align-items:center; padding:0 10px 27px; font-size:1.2rem; font-weight:800; letter-spacing:.08em; }
+    .brand-mark { display:grid; place-items:center; width:32px; height:32px; border-radius:9px; background:var(--gold); color:var(--ink); font-size:1rem; }
+    .new-note { border:0; border-radius:12px; padding:13px 15px; background:var(--gold); color:var(--ink); text-align:left; font-weight:800; cursor:pointer; transition:.2s; }
+    .new-note:hover { transform:translateY(-1px); filter:brightness(1.05); }
+    .search-wrap { position:relative; margin:20px 0 11px; }
+    .search-wrap span { position:absolute; left:13px; top:10px; opacity:.55; }
+    #search { width:100%; padding:10px 12px 10px 35px; color:white; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.08); border-radius:9px; outline:none; }
+    #search::placeholder { color:#aeb8c6; }
+    #search:focus { border-color:var(--gold); }
+    .folder-head { display:flex; justify-content:space-between; align-items:center; margin-top:5px; padding:8px 10px 4px; color:#aeb8c6; font-size:.78rem; }
+    .add-folder { width:23px; height:23px; border:0; border-radius:6px; background:rgba(255,255,255,.1); color:white; cursor:pointer; font-size:1.05rem; line-height:1; }
+    .add-folder:hover { background:rgba(255,255,255,.2); color:var(--gold); }
+    .folder-list { display:grid; gap:2px; padding:2px 0 10px; }
+    .folder-item { display:flex; align-items:center; gap:8px; width:100%; border:0; border-radius:7px; padding:7px 10px; background:transparent; color:#c8d1dc; text-align:left; cursor:pointer; font-size:.83rem; }
+    .folder-item:hover, .folder-item.active { background:rgba(255,255,255,.08); color:white; }
+    .folder-item.active { color:var(--gold); }
+    .folder-item em { margin-left:auto; color:#92a0b2; font-style:normal; font-size:.72rem; }
+    .count { color:#aeb8c6; font-size:.78rem; padding:5px 10px 8px; }
+    .note-list { overflow:auto; flex:1; }
+    .note-card { width:100%; border:0; border-left:3px solid transparent; border-radius:8px; padding:13px 12px; background:transparent; color:inherit; text-align:left; cursor:pointer; transition:.18s; }
+    .note-card:hover { background:rgba(255,255,255,.07); }
+    .note-card.active { background:rgba(255,255,255,.12); border-left-color:var(--gold); }
+    .note-card strong, .note-card small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .note-card strong { font-size:.95rem; margin-bottom:6px; }
+    .note-card small { color:#b9c3d1; font-size:.76rem; }
+    .sidebar-footer { border-top:1px solid rgba(255,255,255,.12); padding:18px 10px 0; color:#aeb8c6; font-size:.78rem; }
+    main { min-width:0; display:flex; flex-direction:column; padding:0 6.5vw; }
+    .toolbar { min-height:88px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); }
+    .status { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:.84rem; }
+    .dot { width:8px; height:8px; border-radius:50%; background:#57ba8b; }
+    .actions { display:flex; gap:8px; }
+    .icon-button { border:1px solid var(--line); width:38px; height:38px; border-radius:9px; background:white; color:var(--ink); font-size:1.1rem; cursor:pointer; }
+    .icon-button:hover { border-color:var(--blue); color:var(--blue); }
+    .editor { width:min(760px,100%); margin:clamp(35px,7vh,82px) auto; flex:1; }
+    #title { width:100%; border:0; outline:0; color:var(--ink); background:transparent; font-size:clamp(2rem,4vw,3.35rem); font-weight:800; letter-spacing:-.045em; padding:0; }
+    #title::placeholder, #content::placeholder { color:#aeb6c3; }
+    .meta { display:flex; gap:10px; align-items:center; padding:17px 0 25px; color:var(--muted); font-size:.83rem; border-bottom:1px solid var(--line); }
+    .tag { border-radius:99px; padding:4px 9px; color:#2e66c8; background:#eaf1ff; font-size:.75rem; font-weight:700; }
+    #folderSelect { margin-left:auto; border:0; border-radius:7px; padding:5px 8px; color:#506176; background:#f1f4f7; font-size:.78rem; outline:0; cursor:pointer; }
+    #content { width:100%; min-height:48vh; margin-top:27px; border:0; outline:0; resize:none; background:transparent; color:#334155; font-size:1.06rem; line-height:1.9; }
+    .empty { padding:45px 18px; text-align:center; color:#aeb8c6; }
+    @media (max-width:720px) { .app { grid-template-columns:1fr; } .sidebar { min-height:auto; padding:18px 14px 10px; } .brand { padding-bottom:16px; } .folder-head,.folder-list { display:none; } .note-list { display:flex; gap:8px; overflow:auto; max-height:112px; } .note-card { min-width:185px; padding:10px; } .sidebar-footer,.count { display:none; } main { padding:0 6vw; min-height:65vh; } .toolbar { min-height:65px; } .editor { margin:34px auto; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">✦</span><span>墨笺</span></div>
+      <button class="new-note" id="newNote">＋ 新建笔记</button>
+      <label class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="搜索笔记" aria-label="搜索笔记" /></label>
+      <div class="folder-head"><span>文件夹</span><button class="add-folder" id="addFolder" title="新建文件夹" aria-label="新建文件夹">＋</button></div>
+      <nav class="folder-list" id="folderList" aria-label="文件夹列表"></nav>
+      <div class="count" id="count"></div>
+      <nav class="note-list" id="noteList" aria-label="笔记列表"></nav>
+      <div class="sidebar-footer">所有内容仅保存在此设备</div>
+    </aside>
+    <main>
+      <header class="toolbar">
+        <div class="status"><span class="dot"></span><span id="saveState">已保存到本地</span></div>
+        <div class="actions"><button class="icon-button" id="deleteNote" title="删除当前笔记" aria-label="删除当前笔记">⌫</button></div>
+      </header>
+      <section class="editor">
+        <input id="title" maxlength="80" placeholder="无标题笔记" aria-label="笔记标题" />
+        <div class="meta"><span class="tag">笔记</span><span id="updatedAt"></span><select id="folderSelect" aria-label="笔记文件夹"></select></div>
+        <textarea id="content" placeholder="在这里记录你的想法…" aria-label="笔记内容"></textarea>
+      </section>
+    </main>
+  </div>
+  <script>
+    (() => {
+      const key = 'mojian-notes-v1', folderKey = 'mojian-folders-v1';
+      const sample = [
+        {id:'welcome', title:'欢迎使用墨笺', content:'这是一个安静的写作空间。\n\n你可以在左侧新建、搜索和切换笔记；内容会自动保存到此设备。\n\n从这一刻开始，记录那些值得留下的念头。', updated: Date.now()},
+        {id:'ideas', title:'本周灵感', content:'• 为周末留出一段不被打扰的阅读时间\n• 整理桌面，让注意力回到真正重要的事上', updated: Date.now()-86400000}
+      ];
+      let notes = JSON.parse(localStorage.getItem(key) || 'null') || sample;
+      let folders = JSON.parse(localStorage.getItem(folderKey) || 'null') || ['工作', '生活'];
+      notes = notes.map(n => ({...n, folder:n.folder || '未分类'}));
+      let selected = notes[0]?.id, activeFolder = 'all', timer;
+      const $ = id => document.getElementById(id);
+      const title=$('title'), content=$('content'), list=$('noteList'), search=$('search'), folderList=$('folderList'), folderSelect=$('folderSelect');
+      const current = () => notes.find(n => n.id === selected);
+      const formatDate = t => new Intl.DateTimeFormat('zh-CN',{month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(t);
+      function save(){ localStorage.setItem(key, JSON.stringify(notes)); localStorage.setItem(folderKey, JSON.stringify(folders)); $('saveState').textContent='已保存到本地'; }
+      function allFolders(){ return ['未分类', ...folders]; }
+      function renderFolders(){
+        const items=[['all','▦','全部笔记'], ...allFolders().map(name=>[name,'▸',name])];
+        folderList.innerHTML=items.map(([id,icon,label])=>`<button class="folder-item ${activeFolder===id?'active':''}" data-folder="${id}"><span>${icon}</span><span>${escapeHtml(label)}</span><em>${id==='all'?notes.length:notes.filter(n=>n.folder===id).length}</em></button>`).join('');
+        folderSelect.innerHTML=allFolders().map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+      }
+      function render(){
+        const q=search.value.trim().toLowerCase();
+        const filtered=notes.filter(n => (activeFolder==='all' || n.folder===activeFolder) && (n.title+n.content).toLowerCase().includes(q));
+        $('count').textContent=`${filtered.length} 篇笔记`;
+        list.innerHTML=filtered.length ? filtered.map(n=>`<button class="note-card ${n.id===selected?'active':''}" data-id="${n.id}"><strong>${escapeHtml(n.title||'无标题笔记')}</strong><small>${escapeHtml(n.content.replace(/\n/g,' ')||'空白笔记')}</small></button>`).join('') : '<div class="empty">没有找到笔记</div>';
+        const n=current(); if(!n) return;
+        renderFolders();
+        title.value=n.title; content.value=n.content; folderSelect.value=n.folder; $('updatedAt').textContent=`更新于 ${formatDate(n.updated)}`;
+      }
+      function escapeHtml(s){return s.replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));}
+      function update(){ const n=current(); if(!n)return; n.title=title.value; n.content=content.value; n.updated=Date.now(); $('saveState').textContent='正在保存…'; clearTimeout(timer); timer=setTimeout(()=>{save();render();},350); }
+      $('newNote').onclick=()=>{ const n={id:crypto.randomUUID(),title:'',content:'',folder:activeFolder==='all'?'未分类':activeFolder,updated:Date.now()}; notes.unshift(n); selected=n.id; save(); render(); title.focus(); };
+      list.onclick=e=>{const button=e.target.closest('[data-id]'); if(button){ selected=button.dataset.id; render(); }};
+      folderList.onclick=e=>{const button=e.target.closest('[data-folder]'); if(button){ activeFolder=button.dataset.folder; render(); }};
+      $('addFolder').onclick=()=>{ const name=prompt('请输入文件夹名称'); const clean=name?.trim(); if(!clean) return; if(allFolders().includes(clean)){ alert('该文件夹已存在。'); return; } folders.push(clean); activeFolder=clean; save(); render(); };
+      $('deleteNote').onclick=()=>{ if(notes.length===1){ alert('请至少保留一篇笔记。'); return; } if(confirm('确定删除这篇笔记吗？')){ notes=notes.filter(n=>n.id!==selected); selected=notes[0].id; save(); render(); }};
+      title.oninput=content.oninput=update;
+      folderSelect.onchange=()=>{ const n=current(); if(!n)return; n.folder=folderSelect.value; activeFolder=n.folder; save(); render(); };
+      search.oninput=render;
+      render();
+      window.noteAppTest = () => ({ hasNotes: notes.length > 0, selected: Boolean(current()), persisted: Boolean(localStorage.getItem(key)), titleSynced: title.value === current().title });
+    })();
+  </script>
+</body>
+</html>
